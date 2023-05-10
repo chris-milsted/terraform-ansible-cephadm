@@ -1,0 +1,53 @@
+#Playbook installs docker as cephadm needs this
+---
+- hosts: all
+  gather_facts: false
+  become: True
+  tasks:
+  - name: Run the equivalent of "apt-get update" as a separate step
+    ansible.builtin.apt:
+      update_cache: yes
+      
+  - name: Update all packages to their latest version
+    ansible.builtin.apt:
+      name: "*"
+      state: latest
+      
+  - name: install prerequisites for Docker repository
+    ansible.builtin.apt:
+      pkg:
+      - ca-certificates
+      - curl
+      - gnupg
+      - lsb-release
+
+  - name: Add Docker GPG apt Key
+    apt_key:
+      url: https://download.docker.com/linux/ubuntu/gpg
+      state: present
+
+  - name: Add Docker Repository
+    apt_repository:
+      repo: deb https://download.docker.com/linux/ubuntu focal stable
+      state: present
+
+  - name: Update apt and install docker-ce and docker-compose
+    apt:
+      pkg:
+        - docker-ce
+        - docker-compose
+        - containerd.io
+      state: latest
+      update_cache: true
+
+  - name: start and enable docker daemon
+    service:
+      name: docker
+      state: started
+      enabled: yes
+
+  - name: start and enable containerd daemon
+    service:
+      name: containerd
+      state: started
+      enabled: yes

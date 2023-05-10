@@ -1,0 +1,16 @@
+- hosts: all
+  gather_facts: false
+  become: True
+  tasks:
+  - name: Harden SSH
+    lineinfile:
+      path: /etc/ssh/sshd_config
+      regexp: '{{ item.key }}'
+      line: '{{ item.value }}'
+    with_dict:
+      '^#?PasswordAuthentication': 'PasswordAuthentication no'
+
+  - name: Restart SSH
+    service:
+      name: sshd
+      state: restarted

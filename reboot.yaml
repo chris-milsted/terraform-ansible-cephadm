@@ -1,0 +1,8 @@
+#Playbook reboots nodes
+---
+- hosts: all
+  gather_facts: false
+  become: True
+  tasks:
+  - name: Unconditionally reboot the machine with all defaults
+    ansible.builtin.reboot:

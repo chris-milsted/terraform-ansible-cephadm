@@ -1,0 +1,7 @@
+#Playbook changes linodes host name from the default localhost to a unique hostname
+---
+- hosts: all
+  become: True
+  tasks:
+  - name: Set unique hostnames on linodes
+    hostname: name={{ inventory_hostname }}
